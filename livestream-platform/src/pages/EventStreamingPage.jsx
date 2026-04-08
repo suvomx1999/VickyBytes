@@ -1,9 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import events from '../data/events'
-import useYoutubeEventVideos from '../hooks/useYoutubeEventVideos'
-
-const youtubeApiKey = import.meta.env.VITE_YOUTUBE_API_KEY
+import { useNavigate } from 'react-router-dom'
 
 const seedMessages = [
   { id: 'seed-1', username: 'Ari', text: 'This intro shot is incredible.', timestamp: '10:01' },
@@ -51,25 +49,10 @@ function getAvatarColor(name) {
   return avatarColors[value % avatarColors.length]
 }
 
-function getVideoIdFromEmbedUrl(url) {
-  try {
-    const parsedUrl = new URL(url)
-    const pathParts = parsedUrl.pathname.split('/').filter(Boolean)
-    return pathParts[pathParts.length - 1] || null
-  } catch {
-    return null
-  }
-}
-
 function EventStreamingPage() {
   const { id } = useParams()
   const event = useMemo(() => events.find((item) => item.id === Number(id)), [id])
-  const singleEventList = useMemo(() => (event ? [event] : []), [event])
-  const { videoMap } = useYoutubeEventVideos(singleEventList)
-  const activeVideo = event ? videoMap[event.id] : null
-  const embedUrl = activeVideo?.embedUrl || event?.videoUrl || ''
-  const [youtubeMeta, setYoutubeMeta] = useState(null)
-  const [youtubeError, setYoutubeError] = useState('')
+  const navigate = useNavigate()
 
   const [messages, setMessages] = useState(seedMessages)
   const [draftMessage, setDraftMessage] = useState('')
@@ -78,57 +61,6 @@ function EventStreamingPage() {
   useEffect(() => {
     setMessages(seedMessages)
   }, [id])
-
-  useEffect(() => {
-    let isSubscribed = true
-
-    const fetchVideoMeta = async () => {
-      setYoutubeMeta(null)
-      setYoutubeError('')
-
-      if (!event || !youtubeApiKey) {
-        return
-      }
-
-      const videoId = activeVideo?.videoId || getVideoIdFromEmbedUrl(embedUrl)
-      if (!videoId) {
-        setYoutubeError('Unable to parse YouTube video ID.')
-        return
-      }
-
-      try {
-        const response = await fetch(
-          `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${videoId}&key=${youtubeApiKey}`,
-        )
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch YouTube metadata')
-        }
-
-        const payload = await response.json()
-        const item = payload?.items?.[0]
-
-        if (isSubscribed && item) {
-          setYoutubeMeta({
-            channelTitle: item.snippet?.channelTitle,
-            publishedAt: item.snippet?.publishedAt,
-            likeCount: item.statistics?.likeCount,
-            commentCount: item.statistics?.commentCount,
-          })
-        }
-      } catch {
-        if (isSubscribed) {
-          setYoutubeError('YouTube metadata unavailable. Check API key restrictions.')
-        }
-      }
-    }
-
-    fetchVideoMeta()
-
-    return () => {
-      isSubscribed = false
-    }
-  }, [activeVideo, embedUrl, event])
 
   useEffect(() => {
     if (!chatContainerRef.current) {
@@ -203,84 +135,99 @@ function EventStreamingPage() {
 
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-5 lg:flex-row">
-        <div className="min-w-0 flex-1 space-y-5">
-          <section className="rounded-2xl border border-slate-800 bg-slate-950/80 p-4 sm:p-5">
-            <div className="mb-4 flex flex-wrap items-center gap-3">
-              <h1 className="text-2xl font-bold text-white sm:text-3xl">{event.title}</h1>
-              {event.isLive ? (
-                <span className="rounded-full bg-red-600 px-3 py-1 text-xs font-bold uppercase tracking-wide text-white">
-                  Live
-                </span>
-              ) : null}
-            </div>
+      <div className="mb-5 flex items-center justify-between gap-3">
+        <button
+          type="button"
+          onClick={() => navigate('/')}
+          className="inline-flex items-center gap-2 rounded-full border border-slate-700 bg-slate-900/80 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:border-cyan-400 hover:text-white"
+        >
+          <span aria-hidden="true">←</span>
+          Back to events
+        </button>
+        <div className="inline-flex items-center gap-2 rounded-full border border-red-500/20 bg-red-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-red-200">
+          <span className="h-2 w-2 rounded-full bg-red-400 shadow-[0_0_0_6px_rgba(248,113,113,0.12)]" />
+          Live broadcast
+        </div>
+      </div>
 
-            <div className="aspect-video overflow-hidden rounded-xl border border-slate-800 bg-black">
+      <div className="grid gap-6 lg:grid-cols-[1.5fr_0.75fr] xl:grid-cols-[1.6fr_0.7fr]">
+        <div className="min-w-0 space-y-5">
+          <section className="overflow-hidden rounded-3xl border border-slate-800 bg-slate-950/85 shadow-2xl shadow-black/20">
+            <div className="grid gap-5 p-5 sm:p-6">
+              <div className="flex flex-wrap items-center gap-3">
+                <h1 className="text-2xl font-black tracking-tight text-white sm:text-3xl lg:text-4xl">
+                  {event.title}
+                </h1>
+                {event.isLive ? (
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-red-600 px-3 py-1 text-xs font-bold uppercase tracking-wide text-white shadow-lg shadow-red-500/20">
+                    <span className="h-1.5 w-1.5 rounded-full bg-white" />
+                    Live
+                  </span>
+                ) : null}
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2 text-sm text-slate-300">
+                <span className="rounded-full border border-slate-700 bg-slate-900/70 px-3 py-1">
+                  {event.viewerCount.toLocaleString()} viewers
+                </span>
+                <span className="rounded-full border border-slate-700 bg-slate-900/70 px-3 py-1">
+                  {event.category}
+                </span>
+                <span className="rounded-full border border-slate-700 bg-slate-900/70 px-3 py-1">
+                  {event.date} · {event.time}
+                </span>
+              </div>
+
+              <div className="aspect-video overflow-hidden rounded-2xl border border-slate-800 bg-black">
               <iframe
-                src={embedUrl}
+                src={event.videoUrl}
                 title={event.title}
                 className="h-full w-full"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               ></iframe>
-            </div>
-
-            <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-slate-300">
-              <span>{event.viewerCount.toLocaleString()} viewers</span>
-              <span className="text-slate-600">•</span>
-              <span className="rounded-full border border-slate-700 px-3 py-1 text-xs font-medium text-slate-200">
-                {event.category}
-              </span>
+              </div>
             </div>
           </section>
 
-          <section className="rounded-2xl border border-slate-800 bg-slate-950/70 p-4 sm:p-5">
-            <h2 className="text-xl font-semibold text-white">About this event</h2>
-            <p className="mt-3 leading-7 text-slate-300">{event.description}</p>
+          <section className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
+            <div className="rounded-3xl border border-slate-800 bg-slate-950/70 p-5 sm:p-6">
+              <h2 className="text-xl font-semibold text-white">About this event</h2>
+              <p className="mt-3 leading-7 text-slate-300">{event.description}</p>
 
-            {youtubeApiKey ? (
-              <div className="mt-4 rounded-xl border border-slate-800 bg-slate-900/60 px-4 py-3 text-sm text-slate-300">
-                <p className="font-semibold text-slate-100">YouTube Metadata</p>
-                {youtubeMeta ? (
-                  <div className="mt-2 space-y-1">
-                    <p>Channel: {youtubeMeta.channelTitle || 'Unknown'}</p>
-                    {activeVideo?.title ? <p>Video: {activeVideo.title}</p> : null}
-                    <p>Likes: {youtubeMeta.likeCount ? Number(youtubeMeta.likeCount).toLocaleString() : 'N/A'}</p>
-                    <p>
-                      Comments: {youtubeMeta.commentCount ? Number(youtubeMeta.commentCount).toLocaleString() : 'N/A'}
-                    </p>
-                  </div>
-                ) : youtubeError ? (
-                  <p className="mt-2 text-amber-300">{youtubeError}</p>
-                ) : (
-                  <p className="mt-2 text-slate-400">Loading metadata...</p>
-                )}
+              <div className="mt-4 flex flex-wrap gap-2">
+                {event.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded-full border border-cyan-700/50 bg-cyan-500/10 px-3 py-1 text-xs font-medium text-cyan-200"
+                  >
+                    #{tag}
+                  </span>
+                ))}
               </div>
-            ) : (
-              <div className="mt-4 rounded-xl border border-slate-800 bg-slate-900/60 px-4 py-3 text-sm text-slate-400">
-                Add VITE_YOUTUBE_API_KEY to your .env file to load YouTube metadata.
-              </div>
-            )}
-
-            <div className="mt-4 flex flex-wrap gap-2">
-              {event.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="rounded-full border border-cyan-700/50 bg-cyan-500/10 px-3 py-1 text-xs font-medium text-cyan-200"
-                >
-                  #{tag}
-                </span>
-              ))}
             </div>
 
-            <div className="mt-5 rounded-xl border border-slate-800 bg-slate-900/70 px-4 py-3 text-sm text-slate-200">
-              Streamed by <span className="font-semibold text-white">{event.streamer}</span> on {event.date}{' '}
-              at {event.time}
+            <div className="rounded-3xl border border-slate-800 bg-slate-950/70 p-5 sm:p-6">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Host</p>
+              <div className="mt-3 flex items-center gap-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-400 to-indigo-500 text-sm font-black text-slate-950">
+                  {event.streamer.charAt(0)}
+                </div>
+                <div>
+                  <p className="text-base font-semibold text-white">{event.streamer}</p>
+                  <p className="text-sm text-slate-400">Streaming on the LiveScape stage</p>
+                </div>
+              </div>
+
+              <div className="mt-5 rounded-2xl border border-slate-800 bg-slate-900/70 px-4 py-3 text-sm text-slate-200">
+                Streamed by <span className="font-semibold text-white">{event.streamer}</span> on {event.date}{' '}
+                at {event.time}
+              </div>
             </div>
           </section>
         </div>
 
-        <aside className="w-full rounded-2xl border border-slate-800 bg-slate-950/85 lg:w-80 lg:shrink-0">
+        <aside className="w-full rounded-3xl border border-slate-800 bg-slate-950/85 shadow-2xl shadow-black/20 lg:sticky lg:top-24 lg:w-80 lg:shrink-0 lg:self-start">
           <div className="flex items-center justify-between border-b border-slate-800 px-4 py-3">
             <h2 className="text-lg font-semibold text-white">Live Chat</h2>
             <span className="rounded-full bg-cyan-500/20 px-3 py-1 text-xs font-medium text-cyan-200">
@@ -296,7 +243,7 @@ function EventStreamingPage() {
               {messages.map((message) => (
                 <div
                   key={message.id}
-                  className="flex items-start gap-3 rounded-xl bg-slate-900/80 p-2.5 animate-chatMessageIn"
+                  className="flex items-start gap-3 rounded-2xl border border-slate-800/80 bg-slate-900/80 p-3 animate-chatMessageIn"
                 >
                   <div
                     className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white ${getAvatarColor(

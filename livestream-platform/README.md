@@ -12,13 +12,11 @@ Live Event Streaming Platform is a frontend-first React application for browsing
 - Local live chat with seed messages, user messages, and simulated incoming messages
 - Smooth route transitions and card/message animation effects
 - Sticky, blurred navbar and mobile-friendly layout behavior
-- Optional YouTube Data API integration for dynamic video thumbnails and metadata
 
 ## Tech Stack
 - React + Vite
 - Tailwind CSS
 - React Router v6
-- YouTube Data API v3 (optional)
 
 ## Local Setup
 1. Clone the repository:
@@ -34,32 +32,17 @@ cd livestream-platform
 npm install
 ```
 
-3. Set environment variables:
-
-```bash
-cp .env.example .env
-```
-
-Then add your key in `.env`:
-
-```env
-VITE_YOUTUBE_API_KEY=your_api_key_here
-```
-
-4. Start development server:
+3. Start development server:
 
 ```bash
 npm run dev
 ```
 
-5. Build for production:
+4. Build for production:
 
 ```bash
 npm run build
 ```
-
-## Environment Variables
-- `VITE_YOUTUBE_API_KEY` (optional): Enables dynamic YouTube video search, thumbnails, and metadata.
 
 ## Deployment
 ### Vercel CLI
@@ -87,8 +70,6 @@ vercel --prod
 3. Use these build settings:
 - Build command: `npm run build`
 - Output directory: `dist`
-4. Add environment variable in Vercel project settings:
-- `VITE_YOUTUBE_API_KEY`
 
 ## SPA Routing (Important)
 This app uses client-side routing. Keep [vercel.json](vercel.json) with rewrite rules so direct visits such as `/event/3` do not 404.

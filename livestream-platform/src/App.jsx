@@ -1,15 +1,10 @@
 import { useEffect } from 'react'
 import { Route, Routes, useLocation } from 'react-router-dom'
-import events from './data/events'
 import EventListingPage from './pages/EventListingPage'
 import EventStreamingPage from './pages/EventStreamingPage'
 
 function App() {
   const location = useLocation()
-
-  useEffect(() => {
-    console.log('Loaded events:', events)
-  }, [])
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
