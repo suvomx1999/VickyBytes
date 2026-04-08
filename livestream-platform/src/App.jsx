@@ -11,6 +11,10 @@ function App() {
     console.log('Loaded events:', events)
   }, [])
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+  }, [location.pathname])
+
   return (
     <div className="min-h-screen text-slate-100 font-body">
       <div key={location.pathname} className="animate-fadeIn">

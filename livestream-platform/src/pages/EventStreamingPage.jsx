@@ -64,7 +64,8 @@ function getVideoIdFromEmbedUrl(url) {
 function EventStreamingPage() {
   const { id } = useParams()
   const event = useMemo(() => events.find((item) => item.id === Number(id)), [id])
-  const { videoMap } = useYoutubeEventVideos(event ? [event] : [])
+  const singleEventList = useMemo(() => (event ? [event] : []), [event])
+  const { videoMap } = useYoutubeEventVideos(singleEventList)
   const activeVideo = event ? videoMap[event.id] : null
   const embedUrl = activeVideo?.embedUrl || event?.videoUrl || ''
   const [youtubeMeta, setYoutubeMeta] = useState(null)

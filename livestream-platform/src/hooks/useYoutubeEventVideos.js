@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 
 const youtubeApiKey = import.meta.env.VITE_YOUTUBE_API_KEY
 const CACHE_KEY = 'livescape_youtube_video_cache_v1'
+const inMemoryCache = {}
 
 function buildQuery(event) {
   return `${event.title} ${event.category} live stream`
@@ -42,6 +43,7 @@ function writeCache(cache) {
 function useYoutubeEventVideos(events) {
   const [videoMap, setVideoMap] = useState({})
   const [loading, setLoading] = useState(false)
+  const eventIdsKey = (events || []).map((event) => event.id).join(',')
 
   useEffect(() => {
     let isMounted = true
@@ -51,7 +53,7 @@ function useYoutubeEventVideos(events) {
         return
       }
 
-      const cache = readCache()
+      const cache = { ...readCache(), ...inMemoryCache }
       const nextMap = {}
       const pendingEvents = []
 
@@ -100,6 +102,7 @@ function useYoutubeEventVideos(events) {
         if (video) {
           freshMap[eventId] = video
           freshCache[eventId] = video
+          inMemoryCache[eventId] = video
         }
       })
 
@@ -116,7 +119,7 @@ function useYoutubeEventVideos(events) {
     return () => {
       isMounted = false
     }
-  }, [events])
+  }, [eventIdsKey, events])
 
   return { videoMap, loading, hasApiKey: Boolean(youtubeApiKey) }
 }
