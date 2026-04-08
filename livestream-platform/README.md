@@ -106,7 +106,7 @@ src/
 - Add streaming page screenshot here
 
 ## Live URL
-- YOUR_VERCEL_URL
+- https://vicky-bytes.vercel.app/
 
 ## Notes
 - All event data is hardcoded locally in the repository.
