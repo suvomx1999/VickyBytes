@@ -1,0 +1,26 @@
+import { useEffect } from 'react'
+import { Route, Routes, useLocation } from 'react-router-dom'
+import events from './data/events'
+import EventListingPage from './pages/EventListingPage'
+import EventStreamingPage from './pages/EventStreamingPage'
+
+function App() {
+  const location = useLocation()
+
+  useEffect(() => {
+    console.log('Loaded events:', events)
+  }, [])
+
+  return (
+    <div className="min-h-screen text-slate-100 font-body">
+      <div key={location.pathname} className="animate-fadeIn">
+        <Routes>
+          <Route path="/" element={<EventListingPage />} />
+          <Route path="/event/:id" element={<EventStreamingPage />} />
+        </Routes>
+      </div>
+    </div>
+  )
+}
+
+export default App
