@@ -1,22 +1,29 @@
 # Live Event Streaming Platform
 
 ## Project Overview
-Live Event Streaming Platform is a frontend-first React application for browsing and watching live-style events with an immersive UI. It includes a searchable listing experience, event-specific streaming pages, and a local interactive chat panel with simulated live activity.
+Live Event Streaming Platform is a responsive, frontend-only React application for browsing and watching live-style events. It includes a searchable event listing page, an event streaming page with a responsive video player, and a local interactive chat panel with simulated messages. The project is built to meet the assignment requirements with a strong focus on UI, UX, and code quality.
 
 ## Features
-- Event discovery grid with responsive card layout
-- Real-time search by event title
-- Filter chips for All, Live Now, and categories
-- Event streaming page with embedded video player
-- Event detail section with tags and streamer metadata
-- Local live chat with seed messages, user messages, and simulated incoming messages
-- Smooth route transitions and card/message animation effects
+- Responsive event discovery grid with 15 local event cards
+- Search bar and category/live filtering
+- Like, share, and watch actions on each card
+- Responsive event streaming page with large video section
+- Local-only live chat with seed messages, user input, and simulated incoming messages
+- Event description, tags, and streamer information
+- Smooth route transitions, animated cards, and chat message motion
 - Sticky, blurred navbar and mobile-friendly layout behavior
 
 ## Tech Stack
 - React + Vite
 - Tailwind CSS
 - React Router v6
+
+## Project Rules Followed
+- No backend
+- No Firebase
+- No shadcn UI
+- No external APIs in the final implementation
+- Local data only
 
 ## Local Setup
 1. Clone the repository:
@@ -68,8 +75,9 @@ vercel --prod
 1. Push this project to GitHub.
 2. Import the repository in Vercel dashboard.
 3. Use these build settings:
-- Build command: `npm run build`
-- Output directory: `dist`
+  - Build command: `npm run build`
+  - Output directory: `dist`
+4. Ensure the environment is deployed as a static frontend project.
 
 ## SPA Routing (Important)
 This app uses client-side routing. Keep [vercel.json](vercel.json) with rewrite rules so direct visits such as `/event/3` do not 404.
@@ -94,8 +102,13 @@ src/
 ```
 
 ## Screenshots
-- Add listing page screenshot
-- Add streaming page screenshot
+- Add listing page screenshot here
+- Add streaming page screenshot here
 
 ## Live URL
 - YOUR_VERCEL_URL
+
+## Notes
+- All event data is hardcoded locally in the repository.
+- The app is optimized for mobile, tablet, and desktop layouts.
+- If you change routes or add new pages, keep the Vercel rewrite rule in place.
