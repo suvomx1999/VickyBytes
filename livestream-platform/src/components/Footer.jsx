@@ -47,11 +47,13 @@ function Footer() {
         </div>
 
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-slate-800/50 pt-8 sm:flex-row">
-          <p className="text-xs text-slate-500">© 2026 LiveScape. Built for the VickyBytes assignment.</p>
+          <p className="text-xs text-slate-500">© 2026 LiveScape. Built for the VickyBytes Internship assignment.</p>
           <div className="flex items-center gap-1.5 text-xs text-slate-500">
-            <span>Made with</span>
+            <span>Made by</span>
             <span className="text-red-400">♥</span>
-            <span>using React + Tailwind CSS</span>
+            <a href="https://github.com/suvomx1999" target="_blank" rel="noreferrer" className="font-medium text-slate-400 hover:text-cyan-400 transition-colors">
+              Shubashis Mete
+            </a>
           </div>
         </div>
       </div>
