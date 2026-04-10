@@ -50,7 +50,6 @@ function Footer() {
           <p className="text-xs text-slate-500">© 2026 LiveScape. Built for the VickyBytes Internship assignment.</p>
           <div className="flex items-center gap-1.5 text-xs text-slate-500">
             <span>Made by</span>
-            <span className="text-red-400">♥</span>
             <a href="https://github.com/suvomx1999" target="_blank" rel="noreferrer" className="font-medium text-slate-400 hover:text-cyan-400 transition-colors">
               Shubashis Mete
             </a>
