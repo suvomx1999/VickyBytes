@@ -4,6 +4,8 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ───────────────────────── Base ───────────────────────── */
+
 :root {
   color: #f8fafc;
   background: radial-gradient(circle at 20% 0%, #0f172a 0%, #020617 55%, #000 100%);
@@ -22,17 +24,21 @@ body,
 body {
   margin: 0;
   font-family: 'Space Grotesk', 'IBM Plex Sans', sans-serif;
-  background: radial-gradient(circle at top, rgba(14, 165, 233, 0.16), transparent 30%),
-    radial-gradient(circle at bottom left, rgba(249, 115, 22, 0.14), transparent 28%),
+  background: radial-gradient(circle at top, rgba(14, 165, 233, 0.14), transparent 32%),
+    radial-gradient(circle at bottom left, rgba(249, 115, 22, 0.10), transparent 28%),
     linear-gradient(180deg, #020617 0%, #020617 55%, #000 100%);
   background-attachment: fixed;
   scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 ::selection {
   background: rgba(34, 211, 238, 0.28);
   color: #ffffff;
 }
+
+/* ───────────────────────── Scrollbar Utilities ───────────────────────── */
 
 .no-scrollbar::-webkit-scrollbar {
   display: none;
@@ -44,20 +50,188 @@ body {
 }
 
 .chat-scrollbar::-webkit-scrollbar {
-  width: 10px;
+  width: 6px;
 }
 
 .chat-scrollbar::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.7);
+  background: rgba(15, 23, 42, 0.5);
   border-radius: 999px;
 }
 
 .chat-scrollbar::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, rgba(56, 189, 248, 0.8), rgba(249, 115, 22, 0.8));
+  background: linear-gradient(180deg, rgba(56, 189, 248, 0.6), rgba(168, 85, 247, 0.5));
   border-radius: 999px;
 }
 
+.chat-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(56, 189, 248, 0.8), rgba(168, 85, 247, 0.7));
+}
+
 .chat-scrollbar {
-  scrollbar-color: rgba(56, 189, 248, 0.8) rgba(15, 23, 42, 0.7);
+  scrollbar-color: rgba(56, 189, 248, 0.5) rgba(15, 23, 42, 0.5);
   scrollbar-width: thin;
+}
+
+/* ───────────────────────── Card Hover Glow ───────────────────────── */
+
+.card-hover {
+  position: relative;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.35s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 60px -15px rgba(0, 0, 0, 0.5),
+    0 0 30px -10px rgba(56, 189, 248, 0.08);
+}
+
+/* ───────────────────────── Watch Button Shimmer ───────────────────────── */
+
+.watch-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.watch-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.watch-btn:hover::after {
+  left: 120%;
+}
+
+/* ───────────────────────── Live Badge Glow ───────────────────────── */
+
+.live-badge {
+  animation: liveGlow 2s ease-in-out infinite;
+}
+
+@keyframes liveGlow {
+  0%, 100% {
+    box-shadow: 0 0 4px rgba(239, 68, 68, 0.3), 0 4px 12px rgba(239, 68, 68, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 12px rgba(239, 68, 68, 0.5), 0 4px 20px rgba(239, 68, 68, 0.25);
+  }
+}
+
+/* ───────────────────────── Gradient Text ───────────────────────── */
+
+.gradient-text {
+  background: linear-gradient(135deg, #38bdf8, #a78bfa, #fb923c, #38bdf8);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientTextShift 8s ease infinite;
+}
+
+@keyframes gradientTextShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* ───────────────────────── Typing Indicator ───────────────────────── */
+
+.typing-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.typing-indicator span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(56, 189, 248, 0.6);
+  animation: typingBounce 1.2s ease-in-out infinite;
+}
+
+.typing-indicator span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.typing-indicator span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes typingBounce {
+  0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+  40% { opacity: 1; transform: scale(1.1); }
+}
+
+/* ───────────────────────── Scroll to Top ───────────────────────── */
+
+.scroll-to-top {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 40;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(12px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.scroll-to-top.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+/* ───────────────────────── Glass Utility ───────────────────────── */
+
+.glass {
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.glass-strong {
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+/* ───────────────────────── Chat "You" messages ───────────────────────── */
+
+.chat-self {
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(99, 102, 241, 0.08));
+  border-color: rgba(56, 189, 248, 0.2);
+}
+
+/* ───────────────────────── Emoji Button ───────────────────────── */
+
+.emoji-btn {
+  transition: transform 0.15s ease, background-color 0.2s ease;
+}
+
+.emoji-btn:hover {
+  transform: scale(1.25);
+}
+
+.emoji-btn:active {
+  transform: scale(0.95);
+}
+
+/* ───────────────────────── Focus Ring ───────────────────────── */
+
+input:focus-visible,
+button:focus-visible {
+  outline: 2px solid rgba(56, 189, 248, 0.5);
+  outline-offset: 2px;
 }
